@@ -22,17 +22,25 @@ Consult the source of each individual tool for further documentation.
 
 ## Getting started
 
-I recommend using `virtualenv`:
+For development, I recommend using `virtualenv`:
 
     $ virtualenv -p $(which python3) .env
-
     $ . .env/bin/activate
-
     $ pip install Mastodon.py
 
-    ... configure things ...
+    ...configure things...
 
     $ python ./scripts/hashtag_helper.py
+
+If you want to install things globally:
+
+    $ sudo pip3 install Mastodon.py
+    $ cp -a scripts/*.py /usr/local/bin
+
+I have a line like this in my crontab, to run the hashtag helper once per hour,
+complemented by the `config.json` file specifying a `looptime` of 3500 seconds.
+
+    15 * * * * /path/to/hashtag_helper.py -q -s -1 /path/to/hh_config.json
 
 
 ## License
