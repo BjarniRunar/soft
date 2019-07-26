@@ -17,13 +17,13 @@ Usage:
 
 Arguments:
 
-    --quiet, -q     Do not print progress reports to stdout
-    --silent, -s    Do not print error messages to stdout
-    --notoots, -n   Do not toot about progress made
-    --oneshot, -1   Run one scraper pass and then exit (good for cron)
+    -q, --quiet     Do not print progress reports to stdout
+    -s, --silent    Do not print error messages to stdout (implies --quiet)
+    -n, --notoots   Do not toot about progress made
+    -1, --oneshot   Run one scraper pass and then exit (good for cron)
 
-The configuration file is JSON, and contains the same fields as are displayed
-in the SETTINGS dict in the source code.
+The configuration file should be JSON, and contain a subset of the fields
+displayed in the SETTINGS dict here below.
 """
 
 VERSION = "0.0.1"
@@ -79,6 +79,10 @@ from mastodon import *
 
 
 def timeline_url(server, tag, since_id=None):
+   # Note: We are deliberately being dumb here and not tracking the last
+   #       seen IDs or anything like that. This makes our requests
+   #       cachable, which seems polite in case all the little instances
+   #       start using this scraper.
    return 'https://%s/api/v1/timelines/tag/%s?limit=10' % (
       server, tag.replace('#', ''))
 
@@ -103,6 +107,7 @@ def load_settings(configs):
    else:
       _raise = True
    try:
+      # FIXME: This is probably overly complicated.
       config = {}
       for cfg in configs:
          config.update(json.load(open(cfg, 'r')))
@@ -117,8 +122,8 @@ if __name__ == '__main__':
    # This is a very crappy argument parser
    oneshot = ('--oneshot' in sys.argv or '-1' in sys.argv)
    toots = not ('--notoots' in sys.argv or '-n' in sys.argv)
-   quiet = ('--quiet' in sys.argv or '-q' in sys.argv)
    silent = ('--silent' in sys.argv or '-s' in sys.argv)
+   quiet = (silent or '--quiet' in sys.argv or '-q' in sys.argv)
    configs = [a for a in sys.argv[1:] if not a.startswith('-')]
 
    SETTINGS.update(load_settings(configs))
@@ -143,7 +148,6 @@ if __name__ == '__main__':
       seen.update(json.load(open('hashtag_helper_seen.json', 'r')))
    except (IOError, OSError):
       pass
-
 
    loop = True
    while loop:

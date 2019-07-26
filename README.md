@@ -40,7 +40,7 @@ If you want to install things globally:
 I have a line like this in my crontab, to run the hashtag helper once per hour,
 complemented by the `config.json` file specifying a `looptime` of 3500 seconds.
 
-    15 * * * * /path/to/hashtag_helper.py -q -s -1 /path/to/hh_config.json
+    15 * * * * /path/to/hashtag_helper.py -s -1 /path/to/hh_config.json
 
 
 ## License
