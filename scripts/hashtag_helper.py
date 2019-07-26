@@ -91,7 +91,8 @@ def simple_get_json(url, silent):
    try:
       ua = SETTINGS['user_agent'] % (VERSION, SETTINGS['contact_info'])
       return json.loads(
-         urlopen(Request(url, headers={'User-Agent': ua})).read())
+         urlopen(Request(url, headers={'User-Agent': ua})
+            ).read().decode('utf-8'))
    except KeyboardInterrupt:
       raise
    except Exception as e:
