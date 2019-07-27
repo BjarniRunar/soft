@@ -250,10 +250,15 @@ if __name__ == '__main__':
                      if not silent:
                         print('m.search(%s...): %s' % (uri[:30], e))
                   except:
-                     traceback.print_exc()
+                     if not silent:
+                        traceback.print_exc()
                      if not nosleep:
                         time.sleep(60)
                seen[uri] = now
+
+            with open('hashtag_helper_seen.json', 'w') as fd:
+                json.dump(seen, fd)
+
             if loop:
                sleeptime = int(max(0, deadline - time.time()))
                if verbose and sleeptime:
@@ -264,9 +269,8 @@ if __name__ == '__main__':
                break
       except KeyboardInterrupt:
          loop = False
-
-      with open('hashtag_helper_seen.json', 'w') as fd:
-         json.dump(seen, fd)
+         with open('hashtag_helper_seen.json', 'w') as fd:
+            json.dump(seen, fd)
 
       summary = 'Discovered %d/%d posts in %d tags, via %d instances.' % (
          count, len(seen), len(SETTINGS['tags']), len(SETTINGS['sources']))
