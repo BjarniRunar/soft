@@ -55,6 +55,8 @@ SETTINGS = {
       # "@bjarni@bre.klaki.net",
       # "(fuck|trump)"
    ],
+   "ignore_many_tags": 0,  # Ignore posts with more tags than this
+#  "ignore_many_links": 0, # FIXME: Ignore posts with more links than this
 
    # Tags we are interested in and instances we scrape from.
    "tags": ["linux", "foss"],
@@ -125,6 +127,10 @@ def simple_get_json(url, silent):
 def should_ignore(post, verbose):
    post_tags = list(t['name'].lower() for t in post.get('tags', []))
    post_content = re.sub('<[^>]+>', ' ', post['content']).lower()
+   if len(post_tags) > (SETTINGS.get('ignore_many_tags') or len(post_tags)):
+      if verbose:
+         print('Too many tags (%s) in post, ignoring' % len(post_tags))
+      return True
    for word in SETTINGS['ignore']:
       if word.startswith('#'):
          if word[1:].lower() in post_tags:
